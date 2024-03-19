@@ -13,6 +13,7 @@ func NewAuthService() *authService {
 
 func (s *authService) CreateUser() {
 //	TODO: create a new user
+	
 }
 
 func (s *authService) LoginUser () {
