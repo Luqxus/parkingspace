@@ -10,7 +10,8 @@ func NewSpaceService() *spaceService {
 }
 
 func GetNearestSpaces() {
-//	TODO: parking spaces in my radius
+	// TODO: parking spaces in my radius
+	
 }
 
 func GetSpace() {
