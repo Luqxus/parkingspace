@@ -78,7 +78,7 @@ func (s *authService) LoginUser(ctx context.Context, data *types.LoginData) (*ty
 	}
 
 	// TODO: generate jwt
-	signedToken, err := tokens.GenerateJWT(user.UID, user.Email)
+	signedToken, err := tokens.GenerateJWT(user.ID, user.Email)
 	if err != nil {
 		log.Panic(err)
 		return nil, "", err
