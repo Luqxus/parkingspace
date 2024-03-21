@@ -20,11 +20,13 @@ type AuthService interface {
 }
 
 type authService struct {
-	storage storage.Storage
+	storage storage.AuthStorage
 }
 
-func NewAuthService() *authService {
-	return &authService{}
+func NewAuthService(authstorage storage.AuthStorage) *authService {
+	return &authService{
+		storage: authstorage,
+	}
 }
 
 func (s *authService) CreateUser(ctx context.Context, data *types.CreateUserData) error {
@@ -43,10 +45,12 @@ func (s *authService) CreateUser(ctx context.Context, data *types.CreateUserData
 	newUser := new(types.User)
 
 	// generate new user id
-	newUser.ID = uuid.NewString()
+	newUser.UID = uuid.NewString()
 	newUser.Email = data.Email
 	newUser.FirstName = data.FirstName
 	newUser.LastName = data.LastName
+	newUser.LastSignIn = time.Now().Local()
+	newUser.IsEmailValified = false
 
 	// hash password
 	newUser.Password, err = HashPassword(data.Password)
@@ -63,7 +67,7 @@ func (s *authService) CreateUser(ctx context.Context, data *types.CreateUserData
 
 // get user by email and matching password
 func (s *authService) LoginUser(ctx context.Context, data *types.LoginData) (*types.User, string, error) {
-	//	TODO: login user logic
+	// sign user in
 
 	// TODO: fetch user by email
 	user, err := s.storage.GetUserWithEmail(ctx, data.Email)
@@ -78,11 +82,14 @@ func (s *authService) LoginUser(ctx context.Context, data *types.LoginData) (*ty
 	}
 
 	// TODO: generate jwt
-	signedToken, err := tokens.GenerateJWT(user.ID, user.Email)
+	signedToken, err := tokens.GenerateJWT(user.UID, user.Email)
 	if err != nil {
 		log.Panic(err)
 		return nil, "", err
 	}
+
+	// update last signin to time.Now().Local on successful signin
+	s.updateLastSignIn(ctx, user.Email)
 
 	// return user, jwt, error
 	return user, signedToken, nil
@@ -94,6 +101,11 @@ func (s *authService) DeleteUser() {
 
 func (s *authService) UpdateUser() {
 	// TODO: update user logic
+}
+
+func (s *authService) updateLastSignIn(ctx context.Context, email string) error {
+	// update last signin to time.Now().Local on successful signin
+	return s.storage.UpdateLastSignIn(ctx, email)
 }
 
 func HashPassword(password string) (string, error) {

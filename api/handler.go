@@ -55,7 +55,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 
 	// call auth service signin service
 
-	user, token, err := h.service.SignIn(r.Body, reqData)
+	user, token, err := h.service.LoginUser(r.Context(), reqData)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

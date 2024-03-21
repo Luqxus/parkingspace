@@ -3,12 +3,14 @@ package types
 import "time"
 
 type User struct {
-	ID        string `gorm:"primaryKey"`
-	Email     string
-	Password  string
-	FirstName string
-	LastName  string
-	CreatedAt time.Time
+	UID        string `db:"uid"`
+	Email     string	`db:"email"`
+	Password  string `db:"password"`
+	FirstName string `db:"first_name"`
+	LastName  string `db:"last_name"`
+	LastSignIn time.Time `db:"last_sign_in"`
+	IsEmailValified bool `db:"is_email_verified"`
+	CreatedAt time.Time	`db:"created_at"`
 }
 
 type CreateUserData struct {
